@@ -1,0 +1,31 @@
+{
+  "name": "pixicontes-backend",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "dev": "NODE_NO_WARNINGS=1 tsx watch src/server.ts",
+    "start": "NODE_NO_WARNINGS=1 tsx src/server.ts",
+    "test": "NODE_NO_WARNINGS=1 vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@fastify/cookie": "^11.1.5",
+    "@fastify/multipart": "^10.1.6",
+    "@fastify/static": "^10.1.8",
+    "fastify": "^5.12.7",
+    "pdfkit": "^0.20.2",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "@types/pdfkit": "^0.17.7",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.5"
+  },
+  "type": "module",
+  "private": true
+}
