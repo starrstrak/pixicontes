@@ -6,3 +6,6 @@ data/
 .DS_Store
 frontend/dev-dist/
 android/
+backups/\ncerts/
+backups/
+certs/

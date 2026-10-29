@@ -99,7 +99,6 @@ export const DEFAULT_SETTINGS = {
   },
   stt: { browserFallback: true },
   languages: { enabled: ['fr', 'de', 'en'], level: 'A1', softTranslation: true },
-  genresActive: null as string[] | null, // null = tous
   limits: { dailyMinutes: 0, monthlyBudgetUsd: 5, dailyChapters: 40, dailyImages: 20, dailyTtsChars: 20000 },
   theme: 'auto' as 'day' | 'night' | 'auto',
   chfPerUsd: 0.8,

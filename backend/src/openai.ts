@@ -59,7 +59,8 @@ export function assertBudget() {
 }
 
 // ---- HTTP ----
-const BASE = 'https://api.openai.com/v1';
+// OPENAI_BASE_URL permet de pointer vers un faux serveur pour les tests de bout en bout.
+const BASE = (process.env.OPENAI_BASE_URL ?? 'https://api.openai.com/v1').replace(/\/$/, '');
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 export async function oaFetch(pathname: string, init: RequestInit & { headers?: Record<string, string> }, opts: { retries?: number; timeoutMs?: number } = {}): Promise<Response> {

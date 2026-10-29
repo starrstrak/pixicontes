@@ -1,0 +1,7 @@
+services:
+  pixicontes:
+    build: .
+    ports: ["8080:8080"]
+    volumes: ["./data:/data"]
+    # environment: [OPENAI_API_KEY=...]   # optionnel : on préfère la saisir dans l'admin
+    restart: unless-stopped
