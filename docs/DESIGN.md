@@ -4,14 +4,17 @@
 
 | Élément | Valeur |
 |---|---|
-| Couleurs jour | fond crème `#fff6e5`, encre `#2b2340`, violet `#7c5cff`, orange `#ff9f43`, menthe `#3fcf9f`, rose `#ff6fae`, ciel `#4fb4ff`, soleil `#ffd166` |
-| Mode nuit | fond `#1b1838`, cartes `#2c2759`, encre `#f2edff` (apaisant, peu de blanc pur) |
-| Typographie | Nunito (arrondie), option Atkinson Hyperlegible, option OpenDyslexic ; taille réglable 90 %–150 % |
-| Formes | rayons 16–24 px, ombres douces « bouton posé », cartes de genre avec dégradé de leur couleur |
-| Mascotte | Pixi, dragon SVG animé : repos (flotte, cligne), joie (saute), réflexion (balance), sommeil |
-| Mouvement | livre qui s'ouvre (3D), propositions qui « popent », micro qui pulse, onde sonore, placeholder d'image qui scintille ; désactivé si `prefers-reduced-motion` |
-| Sons | petites notes générées (WebAudio), désactivables |
-| Accessibilité | contraste élevé en option, libellés ARIA, focus visible, paysage et portrait (barre latérale ↔ barre du bas) |
+| Direction | Sobre, graphique, moderne, façon Spotify / Audible : étagères horizontales, grandes pochettes, lecteur « en cours de lecture ». Inspirée de la référence lavande / rose poudré (formes organiques, boutons charbon en pilule, titres serif) |
+| Couleurs jour | fond `#f3f2fa`, cartes blanches, encre `#22233a`, lavande `#a3a3e8`, action `#6a6ad0`, rose poudré `#eab3a8`, charbon `#2a2b3d` (boutons) |
+| Mode nuit | fond `#13142a`, cartes `#1f2040`, encre `#eeeefb`, boutons clairs |
+| Typographie | Titres Merriweather (serif), texte Nunito ; options Atkinson Hyperlegible et OpenDyslexic ; taille réglable 90 %–150 % |
+| Formes | rayons 18–34 px, ombres très douces, blobs organiques en arrière-plan des bandeaux et des tuiles de genre |
+| Icônes | jeu d'icônes trait 2.2 px cohérent, un pictogramme dessiné par genre ; emojis limités aux choix visuels du héros et aux propositions de l'IA |
+| Mascotte | Pixi : blob lavande à cornes, aplats, yeux blancs, joues rose poudré ; états repos, joie, réflexion, sommeil |
+| Navigation | barre flottante en pilule (portrait) / rail latéral (paysage), 4 espaces, état actif en pastille |
+| Lecteur | pochette d'illustration, chapitres numérotés, propositions en « pistes » façon playlist, barre sombre en bas avec précédent / lecture / suivant / vitesse et progression |
+| Mouvement | slide-up du lecteur, propositions qui apparaissent en cascade, micro qui pulse, onde sonore, placeholder d'image qui ondule ; désactivé si `prefers-reduced-motion` |
+| Accessibilité | contraste élevé en option, libellés ARIA, focus visible, zones tactiles ≥ 56 px, paysage et portrait |
 
 Les composants sont définis dans `frontend/src/styles.css`. Écrans clés (captures réelles de l'application, avec un faux serveur d'IA, donc image de chapitre vide) :
 

@@ -151,30 +151,21 @@ export function Reader({ initial, cfg, onClose, onChanged }: { initial: Story; c
       <div className="reader-body" ref={scroller}>
         <div className="row" style={{ justifyContent: 'center', marginBottom: 8 }} role="group" aria-label="Lire ou écouter">
           {([['read', 'Lire', 'eye'], ['both', 'Lire et écouter', 'book'], ['listen', 'Écouter', 'ear']] as const).map(([m, l, ic]) => (
-            <button key={m} className="chip" aria-pressed={prefs.mode === m} onClick={() => { unlockAudio(); setPrefs({ mode: m }); if (m !== 'read' && last && pstate === 'idle') readChapter(last); }}><Icon n={ic} size={22} />{l}</button>
+            <button key={m} className="chip" aria-pressed={prefs.mode === m} onClick={() => { unlockAudio(); setPrefs({ mode: m }); if (m !== 'read' && last && pstate === 'idle') readChapter(last); }}><Icon n={ic} size={20} />{l}</button>
           ))}
         </div>
         {chapters.map((ch, i) => (
-          <article key={ch.id} className="page card">
-            {ch.chosen && i > 0 && <div className="chosen">➜ {ch.chosen}</div>}
+          <article key={ch.id} className="page">
+            <div className="chapter-label"><span className="num">{i + 1}</span><span className="eyebrow">Chapitre {i + 1}</span></div>
+            {ch.chosen && i > 0 && <div className="chosen">{ch.chosen}</div>}
             {cfg.imageMode !== 'off' && (ch.image
               ? <div style={{ position: 'relative' }}><img className="illus" src={`/media/images/${ch.image}`} alt={ch.imagePrompt} loading="lazy" />
-                  {i === chapters.length - 1 && <button className="btn soft" style={{ position: 'absolute', right: 10, bottom: 24 }} disabled={imgBusy.has(ch.id) || regenLeft === 0} onClick={() => void genImage(ch, true)}><Icon n="image" />Une autre image{regenLeft !== null ? ` (${regenLeft})` : ''}</button>}
+                  {i === chapters.length - 1 && <button className="btn soft" style={{ position: 'absolute', right: 12, bottom: 28, minHeight: 46 }} disabled={imgBusy.has(ch.id) || regenLeft === 0} onClick={() => void genImage(ch, true)}><Icon n="image" />Une autre image{regenLeft !== null ? ` (${regenLeft})` : ''}</button>}
                 </div>
-              : cfg.hasKey && (imgBusy.has(ch.id) || requested.current.has(ch.id)) && <div className="illus-ph" aria-label="Le dessin arrive"><span>🎨</span></div>)}
-            {showText ? <div className="story-text selectable">{renderText(ch)}</div> : <div className="row" style={{ justifyContent: 'center' }}><Mascot mood={playing === ch.id ? 'joy' : 'idle'} size={110} /></div>}
-            {showText && prefs.softTr && ch.translation && <div className="translation">🇫🇷 {ch.translation}</div>}
-            {i === chapters.length - 1 && listens && (
-              <div className="player" role="group" aria-label="Lecteur">
-                <button className="btn soft round" onClick={() => player.skip(-1)} aria-label="Phrase précédente"><Icon n="prev" /></button>
-                <button className="btn big orange" onClick={() => { unlockAudio(); if (playing !== ch.id || pstate === 'idle') readChapter(ch); else if (pstate === 'playing') player.pause(); else player.resume(); }}>
-                  <Icon n={pstate === 'playing' && playing === ch.id ? 'pause' : 'play'} />{pstate === 'loading' && playing === ch.id ? '…' : plabel}
-                </button>
-                <button className="btn soft round" onClick={() => player.skip(1)} aria-label="Phrase suivante"><Icon n="next" /></button>
-                <button className="chip" aria-pressed={prefs.speed > 1.1} onClick={() => setPrefs({ speed: prefs.speed > 1.1 ? 1 : 1.3 })} aria-label="Vitesse rapide"><Icon n="fast" size={22} />Vite</button>
-              </div>
-            )}
-            <div className="row" style={{ justifyContent: 'flex-end' }}>
+              : cfg.hasKey && (imgBusy.has(ch.id) || requested.current.has(ch.id)) && <div className="illus-ph" aria-label="Le dessin arrive"><span /></div>)}
+            {showText ? <div className="story-text selectable">{renderText(ch)}</div> : <div className="row" style={{ justifyContent: 'center' }}><Mascot mood={playing === ch.id ? 'joy' : 'idle'} size={120} /></div>}
+            {showText && prefs.softTr && ch.translation && <div className="translation">FR · {ch.translation}</div>}
+            <div className="tools">
               <button className="chip" onClick={() => setModal({ t: 'edit', ch })}><Icon n="edit" size={20} />Changer un détail</button>
               {chapters.length > 1 && <button className="chip" onClick={() => setModal({ t: 'del', ch })} aria-label="Supprimer ce chapitre"><Icon n="trash" size={20} /></button>}
             </div>
@@ -183,27 +174,41 @@ export function Reader({ initial, cfg, onClose, onChanged }: { initial: Story; c
 
         {last && (
           <section className="page" aria-label="Que se passe-t-il ensuite ?">
-            <h2 style={{ textAlign: 'center' }}>Et maintenant ?</h2>
+            <div className="eyebrow" style={{ marginTop: 6 }}>Et maintenant ?</div>
             <div className="choices">
               {last.choices.map((c, i) => (
                 <button key={i} className="choice" onClick={() => { sfx('ok'); void act('continue', { type: 'choice', text: c.label }); }}>
-                  <span className="ic">{c.icon}</span><span>{c.label}{c.labelFr && <small>{c.labelFr}</small>}</span>
+                  <span className="ic">{c.icon}</span><span className="tx">{c.label}{c.labelFr && <small>{c.labelFr}</small>}</span><span className="chev"><Icon n="back" /></span>
                 </button>
               ))}
-              <button className="choice" onClick={() => { sfx('magic'); void act('continue', { type: 'twist' }, 'Pixi prépare une surprise…', '🎁'); }}><span className="ic">🎁</span><span>Surprise !<small>Un rebondissement</small></span></button>
-              <button className="choice" onClick={() => setModal({ t: 'char' })}><span className="ic">🧙</span><span>Ajouter un personnage</span></button>
+              <button className="choice alt" onClick={() => { sfx('magic'); void act('continue', { type: 'twist' }, 'Pixi prépare une surprise…', '🎁'); }}><span className="ic"><Icon n="dice" /></span><span className="tx">Surprise !<small>Un rebondissement</small></span></button>
+              <button className="choice alt" onClick={() => setModal({ t: 'char' })}><span className="ic"><Icon n="users" /></span><span className="tx">Ajouter un personnage</span></button>
             </div>
           </section>
         )}
       </div>
 
       <div className="composer">
+        {listens && last && (
+          <div className="nowplaying" role="group" aria-label="Lecteur">
+            <div className="np-top">
+              <button className="np-btn" onClick={() => player.skip(-1)} aria-label="Phrase précédente"><Icon n="prev" /></button>
+              <button className="np-btn np-play" aria-label={pstate === 'playing' && playing === last.id ? 'Pause' : 'Écouter'} onClick={() => { unlockAudio(); if (playing !== last.id || pstate === 'idle') readChapter(last); else if (pstate === 'playing') player.pause(); else player.resume(); }}>
+                <Icon n={pstate === 'playing' && playing === last.id ? 'pause' : 'play'} />
+              </button>
+              <button className="np-btn" onClick={() => player.skip(1)} aria-label="Phrase suivante"><Icon n="next" /></button>
+              <div className="np-info"><b>{story.title}</b><small>Chapitre {chapters.length}{pstate === 'loading' ? ' · chargement…' : playing === last.id && sentenceIdx >= 0 ? ` · phrase ${sentenceIdx + 1}/${player.count}` : ''}</small></div>
+              <button className="np-speed" aria-pressed={prefs.speed > 1.1} onClick={() => setPrefs({ speed: prefs.speed > 1.1 ? 1 : 1.3 })} aria-label="Vitesse rapide">{prefs.speed.toFixed(prefs.speed % 1 ? 2 : 0)}×</button>
+            </div>
+            <div className="np-bar"><i style={{ width: `${playing === last.id && sentenceIdx >= 0 && player.count ? ((sentenceIdx + frac) / player.count) * 100 : 0}%` }} /></div>
+          </div>
+        )}
+        {dict.listening && <div className="listening"><div className="wave" aria-label="Pixi t’écoute">{Array.from({ length: 9 }, (_, i) => <i key={i} style={{ height: 6 + dict.level * 40 * (1 - Math.abs(i - 4) / 6) }} />)}</div>Je t’écoute… parle !</div>}
         <div className="suggest" aria-label="Idées rapides">{QUICK.map((q) => <button key={q} className="chip" onClick={() => setText(q)}>{q}</button>)}</div>
-        {dict.listening && <div className="row" style={{ justifyContent: 'center' }}><div className="wave" aria-label="Pixi t’écoute">{Array.from({ length: 9 }, (_, i) => <i key={i} style={{ height: 6 + dict.level * 40 * (1 - Math.abs(i - 4) / 6) }} />)}</div><span>Je t’écoute… parle !</span></div>}
-        <div className="row">
+        <div className="inputbar">
           <button className={`mic ${dict.listening ? 'rec' : ''}`} onClick={dict.toggle} disabled={dict.busy} aria-label={dict.listening ? 'Arrêter' : 'Parler à Pixi'}><Icon n="mic" /></button>
           <input type="text" className="selectable" value={text} placeholder={dict.busy ? 'Pixi écoute bien…' : 'Écris ou dis ton idée…'} onChange={(e) => setText(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && text.trim() && send(text)} aria-label="Ton idée" />
-          <button className="btn big round" style={{ width: 68 }} disabled={!text.trim()} onClick={() => send(text)} aria-label="Envoyer"><Icon n="send" /></button>
+          <button className="btn round" disabled={!text.trim()} onClick={() => send(text)} aria-label="Envoyer"><Icon n="send" /></button>
         </div>
       </div>
 

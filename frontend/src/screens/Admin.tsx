@@ -23,7 +23,7 @@ export function PinGate({ onOk, onClose }: { onOk: () => void; onClose: () => vo
   const press = (d: string) => { const n = (pin + d).slice(0, 8); setPin(n); setMsg(''); };
   return (
     <Modal onClose={onClose} label="Espace parent">
-      <div className="topbar"><h2>🔐 Espace parent</h2><button className="btn soft round" onClick={onClose} aria-label="Fermer"><Icon n="close" /></button></div>
+      <div className="topbar"><h2>Espace parent</h2><button className="btn soft round" onClick={onClose} aria-label="Fermer"><Icon n="close" /></button></div>
       {hasPin === false && <p className="muted" style={{ marginBottom: 8 }}>Première utilisation : choisissez un code (4 à 8 chiffres). Gardez-le pour vous !</p>}
       <div style={{ fontSize: '2rem', textAlign: 'center', letterSpacing: 8, minHeight: 50 }} aria-label="Code saisi">{'●'.repeat(pin.length) || '····'}</div>
       {msg && <p style={{ color: 'var(--danger)', textAlign: 'center', fontWeight: 800 }}>{msg}</p>}
@@ -70,7 +70,7 @@ export function Admin({ cfg, onClose, onConfig }: { cfg: Config; onClose: () => 
     <div className="field"><label>{label}</label><input type="number" step={step} value={path.split('.').reduce((o: any, k) => o[k], st)} onChange={(e) => set(path, +e.target.value)} />{hint && <small className="muted">{hint}</small>}</div>
   );
   const bool = (path: string, label: string) => <label className="switch"><span>{label}</span><input type="checkbox" checked={path.split('.').reduce((o: any, k) => o[k], st)} onChange={(e) => set(path, e.target.checked)} /></label>;
-  const tabs = [['api', '🔑 Clé & modèles'], ['voice', '🔊 Voix'], ['story', '📖 Histoires & images'], ['lang', '🌍 Langues'], ['limits', '⏱️ Limites'], ['costs', '💶 Coûts'], ['genres', '🎭 Genres'], ['manage', '🗂️ Gestion'], ['sec', '🛡️ Sécurité']];
+  const tabs = [['api', 'Clé & modèles'], ['voice', 'Voix'], ['story', 'Histoires & images'], ['lang', 'Langues'], ['limits', 'Limites'], ['costs', 'Coûts'], ['genres', 'Genres'], ['manage', 'Gestion'], ['sec', 'Sécurité']];
 
   return (
     <div className="reader admin" style={{ animation: 'none' }}>

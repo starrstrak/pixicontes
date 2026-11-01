@@ -19,7 +19,7 @@ function Pick({ opts, value, onPick, multi }: { opts: O[]; value: string[]; onPi
     <div className="chips">
       {opts.map(([e, t]) => {
         const on = value.includes(t);
-        return <button key={t} className="chip" aria-pressed={on} onClick={() => { sfx('tap'); onPick(multi ? (on ? value.filter((x) => x !== t) : [...value, t]) : on ? [] : [t]); }}><span style={{ fontSize: '1.5rem' }}>{e}</span>{t}</button>;
+        return <button key={t} className="chip" aria-pressed={on} onClick={() => { sfx('tap'); onPick(multi ? (on ? value.filter((x) => x !== t) : [...value, t]) : on ? [] : [t]); }}><span className="e">{e}</span>{t}</button>;
       })}
     </div>
   );

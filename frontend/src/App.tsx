@@ -69,12 +69,12 @@ export function App() {
         {TABS.map(([id, label, icon]) => <button key={id} className="tab" aria-current={tab === id ? 'page' : undefined} onClick={() => { sfx('tap'); setTab(id); if (id === 'library') void loadLists(); }}><Icon n={icon} /><span>{label}</span></button>)}
       </nav>
       <main className="main">
-        <div className="topbar" style={{ marginBottom: 6 }}>
-          <div className="logo-btn" onPointerDown={logoDown} onPointerUp={logoUp} onPointerLeave={logoUp} onContextMenu={(e) => e.preventDefault()}><Mascot size={44} /> PixiContes</div>
+        <div className="topbar" style={{ marginBottom: 14 }}>
+          <div className="logo-btn" onPointerDown={logoDown} onPointerUp={logoUp} onPointerLeave={logoUp} onContextMenu={(e) => e.preventDefault()}><Mascot size={36} /> PixiContes</div>
           {!online && <span className="pill">📴 Hors-ligne : tu peux relire tes histoires</span>}
           {!cfg.hasKey && <span className="pill">💤 Pixi dort : demande à un grand</span>}
         </div>
-        {tab === 'new' && <NewStory cfg={cfg} libraryHeroes={chars} onCreated={(s) => { setOpen(s); void loadLists(); setTab('library'); }} />}
+        {tab === 'new' && <NewStory cfg={cfg} libraryHeroes={chars} recent={stories} onOpen={openStory} onCreated={(s) => { setOpen(s); void loadLists(); setTab('library'); }} />}
         {tab === 'library' && <Library items={stories} cfg={cfg} onOpen={openStory} onNew={() => setTab('new')} onChanged={loadLists} />}
         {tab === 'chars' && <Characters items={chars} cfg={cfg} onChanged={loadLists} />}
         {tab === 'settings' && <ChildSettings cfg={cfg} />}

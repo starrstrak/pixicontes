@@ -1,13 +1,14 @@
 import { useState } from 'react';
-import type { Config, HeroDraft, Story } from '../lib/types';
+import type { Config, HeroDraft, Story, StoryItem } from '../lib/types';
 import { api, KidError } from '../lib/api';
 import { Steps, Say, VoiceField, useUI } from '../components/ui';
 import { HeroForm } from '../components/HeroForm';
-import { Icon } from '../components/Icon';
+import { Icon, GenreIcon } from '../components/Icon';
+import { Mascot } from '../components/Mascot';
 import { usePrefs, setPrefs } from '../lib/prefs';
 import { sfx } from '../lib/sound';
 
-export function NewStory({ cfg, onCreated, libraryHeroes }: { cfg: Config; onCreated: (s: Story) => void; libraryHeroes: (HeroDraft & { id: string })[] }) {
+export function NewStory({ cfg, onCreated, libraryHeroes, recent, onOpen }: { cfg: Config; onCreated: (s: Story) => void; libraryHeroes: (HeroDraft & { id: string })[]; recent: StoryItem[]; onOpen: (id: string) => void }) {
   const { busy, toast } = useUI();
   const prefs = usePrefs();
   const [step, setStep] = useState(0);
@@ -33,24 +34,46 @@ export function NewStory({ cfg, onCreated, libraryHeroes }: { cfg: Config; onCre
 
   if (creating) return <HeroForm cfg={cfg} lang={lang.id} onCancel={() => setCreating(false)} onDone={(h) => { setHero(h); setCreating(false); void launch(h); }} />;
 
+  const langs = (
+    <div className="row" aria-label="Langue de l’histoire">{cfg.languages.map((l) => <button key={l.id} className="chip" aria-pressed={l.id === lang.id} aria-label={l.name} onClick={() => setPrefs({ lang: l.id })}><span className="e">{l.flag}</span>{l.id.toUpperCase()}</button>)}</div>
+  );
   return (
     <div>
-      <div className="topbar"><h1>Nouvelle histoire</h1>
-        <div className="row" aria-label="Langue de l’histoire">{cfg.languages.map((l) => <button key={l.id} className="chip" aria-pressed={l.id === lang.id} aria-label={l.name} onClick={() => setPrefs({ lang: l.id })}><span style={{ fontSize: '1.6rem' }}>{l.flag}</span></button>)}</div>
-      </div>
-      <Steps n={step + 1} of={3} />
-      {step === 0 && (<>
-        <Say mood="joy">Quelle histoire as-tu envie de vivre ?</Say>
-        <div style={{ height: 14 }} />
-        <div className="grid">
-          {cfg.genres.map((x) => (
-            <button key={x.id} className="card-btn genre" style={{ ['--gc' as string]: x.color }} aria-pressed={genre === x.id} onClick={() => { sfx('tap'); setGenre(x.id); }}>
-              <span className="big-emoji">{x.icon}</span>{x.name}<small>{x.description}</small>
-            </button>
-          ))}
-        </div>
-        {g?.free && <div className="field" style={{ marginTop: 14 }}><label>Raconte-moi ton idée !</label><VoiceField multiline value={idea} onChange={setIdea} placeholder="Ex : une école où les professeurs sont des fantômes gentils" lang={lang.id} cfg={cfg} /></div>}
-        <div className="row" style={{ marginTop: 18, justifyContent: 'flex-end' }}><button className="btn big" disabled={!genre || (g?.free && !idea.trim())} onClick={() => { sfx('ok'); setStep(1); }}>Suivant</button></div>
+      {step === 0 ? (
+        <>
+          <div className="hero">
+            <div className="mascot-pos"><Mascot mood="joy" size={104} /></div>
+            <span className="eyebrow" style={{ color: 'rgba(255,255,255,.85)' }}>Nouvelle histoire</span>
+            <h1>Et si on inventait une histoire ?</h1>
+            <p>Choisis un monde, crée ton héros, et deviens l’auteur.</p>
+          </div>
+          {recent.length > 0 && (<>
+            <div className="shelf-head"><h2>Reprendre</h2></div>
+            <div className="shelf">
+              {recent.slice(0, 8).map((s) => (
+                <button key={s.id} className="tile" onClick={() => onOpen(s.id)} aria-label={`Reprendre ${s.title}`}>
+                  {s.cover ? <img className="cover" src={`/media/images/${s.cover}`} alt="" /> : <div className="cover" style={{ ['--gc' as string]: cfg.genres.find((g) => g.id === s.genreId)?.color }}><GenreIcon id={s.genreId ?? ''} emoji="📖" /></div>}
+                  <b>{s.title}</b><small>{s.chapters} chapitre{s.chapters > 1 ? 's' : ''}</small>
+                </button>
+              ))}
+            </div>
+          </>)}
+          <div className="shelf-head"><h2>Choisis un genre</h2>{langs}</div>
+          <Steps n={1} of={3} />
+          <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(158px, 1fr))' }}>
+            {cfg.genres.map((x) => (
+              <button key={x.id} className="genre-tile" style={{ ['--gc' as string]: x.color }} aria-pressed={genre === x.id} onClick={() => { sfx('tap'); setGenre(x.id); }}>
+                <span className="gi"><GenreIcon id={x.id} emoji={x.icon} /></span>
+                <span><b>{x.name}</b><small>{x.description}</small></span>
+              </button>
+            ))}
+          </div>
+          {g?.free && <div className="field" style={{ marginTop: 16 }}><label>Raconte-moi ton idée</label><VoiceField multiline value={idea} onChange={setIdea} placeholder="Ex : une école où les professeurs sont des fantômes gentils" lang={lang.id} cfg={cfg} /></div>}
+          <div className="row" style={{ marginTop: 18, justifyContent: 'flex-end' }}><button className="btn big" disabled={!genre || (g?.free && !idea.trim())} onClick={() => { sfx('ok'); setStep(1); }}>Suivant</button></div>
+        </>
+      ) : (<>
+        <div className="topbar"><h1>Nouvelle histoire</h1>{langs}</div>
+        <Steps n={step + 1} of={3} />
       </>)}
       {step === 1 && (<>
         <Say mood="think">Comment veux-tu que ce soit dessiné ?</Say>

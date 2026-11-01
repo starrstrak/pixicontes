@@ -1,4 +1,6 @@
 import { createRoot } from 'react-dom/client';
+import '@fontsource/merriweather/700.css';
+import '@fontsource/merriweather/900.css';
 import '@fontsource/nunito/400.css';
 import '@fontsource/nunito/700.css';
 import '@fontsource/nunito/800.css';

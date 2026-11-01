@@ -24,7 +24,7 @@ export function DictionaryModal({ term, context, lang, cfg, onClose }: { term: s
   const say = (t: string, l: string) => playOnce(t, { profile: p.voice || cfg.defaults.voice, dialogueProfile: null, tone: 'calme', lang: l, speed: Math.min(p.speed, 1), volume: p.volume, browserTts: false }).catch((er) => toast((er as KidError).kid));
   return (
     <Modal onClose={onClose} label="Dictionnaire">
-      <div className="topbar"><h2>📚 Dictionnaire</h2><button className="btn soft round" onClick={onClose} aria-label="Fermer"><Icon n="close" /></button></div>
+      <div className="topbar"><h2>Dictionnaire</h2><button className="btn soft round" onClick={onClose} aria-label="Fermer"><Icon n="close" /></button></div>
       <div className="row" style={{ flexWrap: 'nowrap' }}>
         <div style={{ flex: 1 }}><VoiceField value={q} onChange={setQ} placeholder="Un mot ou une phrase" lang={p.explainLang} cfg={cfg} /></div>
         <button className="btn round" onClick={() => void look(q)} aria-label="Chercher"><Icon n="search" /></button>

@@ -22,7 +22,7 @@ export function UIProvider({ children }: { children: ReactNode }) {
       {loading && (
         <div className="loader" role="status" aria-live="polite">
           <Mascot mood="think" size={130} />
-          <div className="emoji">{loading.emoji}</div>
+          <div className="dots" aria-hidden="true"><i /><i /><i /></div>
           <h2>{loading.label}</h2>
           <p className="muted">{WAIT[tick % WAIT.length]}</p>
         </div>
