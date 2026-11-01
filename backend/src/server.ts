@@ -9,7 +9,8 @@ import { AUDIO_DIR, FRONT_DIST, HTTPS_CERT, HTTPS_KEY, IMAGE_DIR, PORT } from '.
 import { db, dayStr, getSettings, getRaw, logEvent, monthStr, now, saveSettings, setRaw, counter } from './db.js';
 import { ApiError, KID_MSG, monthCost, testKey } from './openai.js';
 import { checkPin, clearApiKey, endAdminSession, getApiKey, hasPin, isAdminToken, keyHint, newAdminSession, setApiKey, setPin } from './secrets.js';
-import { STYLES, TONES, VOICE_PROFILES } from './defaults.js';
+import { STYLES, TONES } from './defaults.js';
+import { BASE_VOICES, TIMBRES, EMOTIONS, AGES, ACCENTS } from './voices.js';
 import { LANGS } from './engine.js';
 import * as S from './stories.js';
 import { define, generateImage, synthesize, transcribe } from './media.js';
@@ -57,7 +58,10 @@ app.get('/api/config', async () => {
     hasKey: !!getApiKey(),
     genres: (genres as { id: string; prompt: string }[]).map((g) => ({ ...g, prompt: undefined, free: g.id === 'libre' })),
     styles: STYLES.map(({ id, label, emoji }) => ({ id, label, emoji })),
-    voices: VOICE_PROFILES.map(({ id, label, emoji }) => ({ id, label, emoji })),
+    voices: s.voice.profiles.map(({ id, label, emoji, desc, spec }) => ({ id, label, emoji, desc, spec })),
+    voiceLab: { bases: BASE_VOICES, timbres: TIMBRES.map(([id, label]) => ({ id, label })), emotions: EMOTIONS.map(([id, label]) => ({ id, label })), ages: AGES.map(([id, label]) => ({ id, label })), accents: Object.fromEntries(Object.entries(ACCENTS).map(([l, a]) => [l, a.map(([id, label]) => ({ id, label }))])) },
+    granularity: s.voice.granularity,
+    dialogueProfile: s.voice.dialogueProfile,
     tones: TONES.map(({ id, label, emoji }) => ({ id, label, emoji })),
     languages: s.languages.enabled.filter((l) => LANGS[l]).map((l) => ({ id: l, ...LANGS[l] })),
     softTranslation: s.languages.softTranslation,
@@ -160,7 +164,7 @@ app.delete('/api/characters/:id', async (req) => {
 // ---------- Voix / dictionnaire ----------
 app.post('/api/tts', async (req, reply) => {
   guardTime(req);
-  const b = z.object({ text: z.string().min(1).max(800), profile: z.string().optional(), tone: z.string().optional(), lang: z.string().optional() }).parse(req.body);
+  const b = z.object({ text: z.string().min(1).max(1900), spec: z.unknown().optional(), profile: z.string().optional(), tone: z.string().optional(), lang: z.string().optional() }).parse(req.body);
   const file = await synthesize(b);
   return reply.header('Content-Type', 'audio/mpeg').header('Cache-Control', 'private, max-age=31536000, immutable').send(fs.createReadStream(file));
 });
@@ -202,7 +206,7 @@ app.post('/api/admin/change-pin', async (req) => {
 });
 app.get('/api/admin/settings', async (req) => {
   requireAdmin(req);
-  return { settings: getSettings(), keySet: !!getApiKey(), keyHint: keyHint(), keyFromEnv: !getRaw('openai_key_enc') && !!process.env.OPENAI_API_KEY, voiceProfiles: VOICE_PROFILES, tones: TONES };
+  return { settings: getSettings(), keySet: !!getApiKey(), keyHint: keyHint(), keyFromEnv: !getRaw('openai_key_enc') && !!process.env.OPENAI_API_KEY, voiceLab: { bases: BASE_VOICES, timbres: TIMBRES.map(([id, label]) => ({ id, label })), emotions: EMOTIONS.map(([id, label]) => ({ id, label })), ages: AGES.map(([id, label]) => ({ id, label })), accents: Object.fromEntries(Object.entries(ACCENTS).map(([l, a]) => [l, a.map(([id, label]) => ({ id, label }))])) }, tones: TONES };
 });
 app.put('/api/admin/settings', async (req) => { requireAdmin(req); return saveSettings(req.body); });
 app.put('/api/admin/key', async (req) => {

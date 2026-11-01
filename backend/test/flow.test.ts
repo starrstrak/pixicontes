@@ -145,7 +145,7 @@ describe('parcours principal', () => {
     expect(calls.filter((c) => c.url.endsWith('/audio/speech')).length).toBe(c1 + 1);
     const speech = calls.filter((c) => c.url.endsWith('/audio/speech')).at(-1)!.body;
     expect(speech.model).toBe('gpt-4o-mini-tts');
-    expect(speech.instructions).toContain('français');
+    expect(speech.instructions).toContain('French');
   });
 
   it('bloque toute génération au plafond mensuel', async () => {

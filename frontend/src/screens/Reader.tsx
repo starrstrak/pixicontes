@@ -5,6 +5,7 @@ import { api, KidError } from '../lib/api';
 import { splitSentences, DICT_RE } from '../lib/sentences';
 import { StoryPlayer, unlockAudio, type PlayerState } from '../lib/player';
 import { getPrefs, setPrefs, usePrefs } from '../lib/prefs';
+import { allProfiles, effectiveSpec } from '../lib/voice';
 import { sfx } from '../lib/sound';
 import { useDictation } from '../lib/useDictation';
 import { Icon } from '../components/Icon';
@@ -41,7 +42,8 @@ export function Reader({ initial, cfg, onClose, onChanged }: { initial: Story; c
   // ---- Lecteur audio ----
   const player = useMemo(() => new StoryPlayer(() => {
     const p = getPrefs();
-    return { profile: p.voice || cfg.defaults.voice, dialogueProfile: cfg.perCharacterVoice ? 'joyeuse' : null, tone: p.tone || cfg.defaults.tone, lang: sref.current.lang, speed: p.speed || cfg.defaults.speed, volume: p.volume, browserTts: cfg.allowBrowserTts };
+    const dlg = cfg.perCharacterVoice ? allProfiles(cfg, p).find((v) => v.id === cfg.dialogueProfile)?.spec ?? null : null;
+    return { spec: effectiveSpec(cfg, p), dialogueSpec: dlg, lang: sref.current.lang, speed: p.speed || cfg.defaults.speed, volume: p.volume, browserTts: cfg.allowBrowserTts, granularity: p.granularity || cfg.granularity };
   }, {
     onState: setPstate, onSentence: setSentenceIdx, onProgress: (_i, f) => setFrac(f),
     onEnd: () => { setSentenceIdx(-1); setPlaying(null); },

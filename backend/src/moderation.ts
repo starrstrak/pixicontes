@@ -4,14 +4,14 @@ import { oaFetch, recordUsage } from './openai.js';
 import { getApiKey } from './secrets.js';
 
 /** Retire e-mails, liens, numéros de téléphone avant tout envoi à l'IA. */
-export function scrubPII(text: string): string {
+export function scrubPII(text: string, max = 400): string {
   return text
     .replace(/https?:\/\/\S+|www\.\S+/gi, ' ')
     .replace(/[\w.+-]+@[\w-]+\.[\w.-]+/g, ' ')
     .replace(/(\+?\d[\d .-]{7,}\d)/g, ' ')
     .replace(/\s+/g, ' ')
     .trim()
-    .slice(0, 400);
+    .slice(0, max);
 }
 
 // Radicaux sans ambiguïté (FR/EN/DE). Volontairement courts : les combats de dragons restent permis.

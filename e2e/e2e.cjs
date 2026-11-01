@@ -103,6 +103,18 @@ const step = (m) => console.log('•', m);
     await p.setViewportSize({ width: 800, height: 1180 });
     await p.getByRole('button', { name: /Réglages/ }).click();
     await p.screenshot({ path: `${shots}/08-reglages-portrait.png` });
+    step('atelier de voix : 16+ voix, réglages fins, échantillon avec consigne détaillée');
+    assert((await p.getByRole('button', { name: /^Écouter / }).count()) >= 16, 'au moins 16 voix attendues');
+    await p.getByRole('button', { name: /Atelier de voix/ }).click();
+    await p.getByRole('button', { name: 'Cedar' }).click();
+    await p.getByRole('button', { name: 'Théâtrale' }).count();
+    await p.getByRole('button', { name: 'Mélancolique doux' }).click();
+    await p.getByRole('button', { name: 'Personne âgée' }).click();
+    await p.getByRole('button', { name: 'Suisse romand' }).click();
+    const [req] = await Promise.all([p.waitForRequest((r) => r.url().includes('/api/tts')), p.getByRole('button', { name: /Écouter cet échantillon/ }).click()]);
+    const body = JSON.parse(req.postData());
+    assert.equal(body.spec.voice, 'cedar'); assert(body.spec.emotion.includes('melancolique')); assert.equal(body.spec.age, 'ancien'); assert.equal(body.spec.accent, 'suisse');
+    await p.screenshot({ path: `${shots}/09-atelier-voix.png`, fullPage: false });
     assert.equal(errors.length, 0, 'erreurs JS : ' + errors.join('; '));
     console.log('\n✅ E2E OK — captures dans', shots);
   } catch (e) {

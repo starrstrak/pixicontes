@@ -35,7 +35,7 @@ Le PC doit être allumé pour écrire de nouveaux chapitres, entendre la voix ou
 
 - **Genres** : aventure, magie et fées, animaux, espace, pirates, dinosaures, mystère, super-héros, école, histoires drôles, contes revisités, sous la mer, robots, chevaliers et dragons, voyage dans le temps, **idée libre**. Extensibles dans l'admin.
 - **Co-création** : à chaque chapitre, 3 propositions (icône + texte court) ou une idée libre ; 🎁 surprise ; ajout/modification de personnage à tout moment ; « changer un détail » d'un chapitre ; annuler/refaire ; supprimer un chapitre. La mémoire de l'histoire (personnages, pouvoirs, défauts, lieux, objets, événements) est envoyée à chaque tour ; les anciens chapitres sont résumés.
-- **Voix et texte** : dictée avec transcription corrigeable avant envoi ; lecture à voix haute avec surlignage, 6 voix, 4 styles, vitesse 0,7×–1,3×, volume, précédent/suivant ; lire seulement / écouter seulement / les deux ; cache audio.
+- **Voix et texte** : dictée avec transcription corrigeable avant envoi ; lecture à voix haute avec surlignage, 13 voix de base et 16 profils, atelier de voix (tonalité, timbre, émotions, modulation, variation, rythme, diction, pauses, âge, accent), fluidité réglable, vitesse 0,7×–1,3×, volume, précédent/suivant ; lire seulement / écouter seulement / les deux ; cache audio.
 - **Illustrations** : une par chapitre (réglable), 4 styles (aquarelle, dessin animé, papier découpé, 3D mignonne), personnages cohérents grâce aux fiches visuelles figées, « une autre image » limité par jour.
 - **Langues** : FR / DE / EN (A1), traduction douce en français, dictionnaire au toucher (mot ou phrase, appui long) ou « c'est quoi … ? », explication simple + exemple + emoji + prononciation, mis en cache.
 - **Parent** : PIN, clé API, modèles (texte, voix, transcription, image, modération), voix, illustrations, longueur des chapitres, langues et niveau, genres, durée quotidienne, plafond de dépense, limites du jour, coûts par jour (CHF/USD), journal des contenus filtrés, export/suppression des histoires, sauvegarde/restauration, caches. PDF illustré de chaque histoire.
@@ -51,7 +51,7 @@ npm run typecheck
 npm run e2e           # parcours navigateur complet (Playwright) avec faux OpenAI
 ```
 
-Documentation : [Architecture](docs/ARCHITECTURE.md) · [Décisions](docs/DECISIONS.md) · [Coûts](docs/COUTS.md) · [Design](docs/DESIGN.md) · [HTTPS tablette](docs/HTTPS-TABLETTE.md) · [APK](docs/APK-CAPACITOR.md)
+Documentation : [Architecture](docs/ARCHITECTURE.md) · [Décisions](docs/DECISIONS.md) · [Coûts](docs/COUTS.md) · [Design](docs/DESIGN.md) · [Voix](docs/VOIX.md) · [HTTPS tablette](docs/HTTPS-TABLETTE.md) · [APK](docs/APK-CAPACITOR.md)
 
 ## ⚠️ Reste à valider par vous
 

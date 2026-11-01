@@ -8,7 +8,7 @@ export type Genre = { id: string; name: string; icon: string; description: strin
 export type Opt = { id: string; label: string; emoji: string };
 export type Lang = { id: string; name: string; flag: string; iso: string };
 export type Config = {
-  hasKey: boolean; genres: Genre[]; styles: Opt[]; voices: Opt[]; tones: Opt[]; languages: Lang[]; softTranslation: boolean;
+  hasKey: boolean; genres: Genre[]; styles: Opt[]; voices: import('./voice').VoiceProfile[]; voiceLab: import('./voice').VoiceLabData; granularity: 'phrase' | 'groupe' | 'chapitre'; dialogueProfile: string; tones: Opt[]; languages: Lang[]; softTranslation: boolean;
   defaults: { voice: string; tone: string; speed: number }; imageMode: 'chapter' | 'major' | 'off'; allowBrowserTts: boolean; sttBrowserFallback: boolean;
   perCharacterVoice: boolean; theme: 'day' | 'night' | 'auto'; timeLeftSec: number | null; regenLeft: number | null;
 };

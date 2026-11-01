@@ -8,8 +8,8 @@ import { ApiError, KID_MSG, assertBudget, chatJSON, costImage, costStt, costTts,
 import { charactersInScene } from './memory.js';
 import { getStory, setChapterImage } from './stories.js';
 import { LANGS } from './engine.js';
-import { moderate, scrubPII } from './moderation.js';
-import { TONES, VOICE_PROFILES } from './defaults.js';
+import { moderate, scrubPII, localCheck } from './moderation.js';
+import { TONE_EMOTIONS, type VoiceSpec, specSchema, defaultSpec, buildInstructions, voiceFor } from './voices.js';
 
 // ================= Illustrations =================
 export function buildImagePrompt(story: NonNullable<ReturnType<typeof getStory>>, chapterId: string): string {
@@ -59,24 +59,33 @@ export async function generateImage(storyId: string, chapterId: string, regen: b
 }
 
 // ================= Synthèse vocale =================
-export type TtsReq = { text: string; profile?: string; tone?: string; lang?: string };
+export type TtsReq = { text: string; spec?: unknown; profile?: string; tone?: string; lang?: string };
 function ttsKey(model: string, voice: string, instructions: string, text: string) {
   return crypto.createHash('sha256').update([model, voice, instructions, text].join('\u0001')).digest('hex');
 }
-export function ttsInstructions(profileId: string, toneId: string, lang: string): { voice: string; instructions: string } {
-  const p = VOICE_PROFILES.find((v) => v.id === profileId) ?? VOICE_PROFILES[0];
-  const t = TONES.find((x) => x.id === toneId) ?? TONES[0];
-  const L = LANGS[lang] ?? LANGS.fr;
-  return { voice: p.voice, instructions: `Lis en ${L.name}, avec un accent natif naturel. ${p.instructions} ${t.instructions} Articule clairement pour un enfant de 8 ans. Jamais robotique.` };
+/** Spécification de voix effective : `spec` (validée/bornée) sinon profil du catalogue (+ ambiance rapide). */
+export function resolveSpec(r: { spec?: unknown; profile?: string; tone?: string }): VoiceSpec {
+  const s = getSettings();
+  if (r.spec) {
+    const sp = specSchema.parse(r.spec);
+    return { ...sp, extra: sp.extra && !localCheck(sp.extra).flagged ? scrubPII(sp.extra, 200) : '' }; // consigne libre filtrée
+  }
+  const prof = s.voice.profiles.find((p) => p.id === (r.profile ?? s.voice.defaultProfile)) ?? s.voice.profiles[0];
+  const spec = defaultSpec(prof?.spec ?? {});
+  const tone = r.tone && TONE_EMOTIONS[r.tone];
+  return tone ? { ...spec, emotion: tone } : spec;
+}
+export function ttsInstructions(spec: VoiceSpec, lang: string, model: string): { voice: string; instructions: string } {
+  return { voice: voiceFor(spec, model), instructions: buildInstructions(spec, lang) };
 }
 
 /** Retourne le chemin du MP3 (cache). La vitesse est appliquée côté lecteur pour ne jamais régénérer. */
 export async function synthesize(r: TtsReq): Promise<string> {
   const s = getSettings();
-  const text = scrubPII(r.text).slice(0, 600);
+  const text = scrubPII(r.text, 1800);
   if (!text) throw new ApiError('bad_request', KID_MSG.bad_request, 'Texte vide', 400);
-  const { voice, instructions } = ttsInstructions(r.profile ?? s.voice.defaultProfile, r.tone ?? s.voice.defaultTone, r.lang ?? 'fr');
   const model = s.models.tts;
+  const { voice, instructions } = ttsInstructions(resolveSpec({ ...r, tone: r.tone ?? (r.spec ? undefined : s.voice.defaultTone) }), r.lang ?? 'fr', model);
   const useInstr = /gpt-4o/.test(model); // tts-1 / tts-1-hd ne gèrent pas les instructions de style
   const file = path.join(AUDIO_DIR, ttsKey(model, voice, useInstr ? instructions : '', text) + '.mp3');
   if (fs.existsSync(file)) return file;

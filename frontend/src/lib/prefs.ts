@@ -1,13 +1,16 @@
 import { useSyncExternalStore } from 'react';
+import type { VoiceProfile, VoiceSpec } from './voice';
 
 export type Prefs = {
   mode: 'read' | 'listen' | 'both'; voice: string; tone: string; speed: number; volume: number;
   fontScale: number; font: 'normal' | 'clear' | 'dys'; contrast: boolean; theme: 'auto' | 'day' | 'night'; sounds: boolean;
   lang: string; softTr: boolean; explainLang: string; autoRead: boolean;
+  voiceTweak: Partial<VoiceSpec> | null; myVoices: VoiceProfile[]; granularity: '' | 'phrase' | 'groupe' | 'chapitre';
 };
 export const DEFAULT_PREFS: Prefs = {
   mode: 'both', voice: '', tone: '', speed: 1, volume: 1, fontScale: 1, font: 'normal', contrast: false, theme: 'auto', sounds: true,
   lang: 'fr', softTr: true, explainLang: 'fr', autoRead: true,
+  voiceTweak: null, myVoices: [], granularity: '',
 };
 const KEY = 'pixi_prefs';
 let state: Prefs = (() => { try { return { ...DEFAULT_PREFS, ...JSON.parse(localStorage.getItem(KEY) ?? '{}') }; } catch { return DEFAULT_PREFS; } })();

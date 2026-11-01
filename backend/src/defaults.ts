@@ -1,16 +1,7 @@
 // Valeurs par défaut des réglages, genres, styles, voix et tarifs.
 // Les tarifs sont des ESTIMATIONS (USD) modifiables dans l'admin : à vérifier sur la page officielle OpenAI.
 
-export type VoiceProfile = { id: string; label: string; emoji: string; voice: string; instructions: string };
-
-export const VOICE_PROFILES: VoiceProfile[] = [
-  { id: 'douce', label: 'Douce', emoji: '🌙', voice: 'sage', instructions: 'Voix douce, chaleureuse et rassurante, comme un parent qui lit une histoire du soir.' },
-  { id: 'joyeuse', label: 'Joyeuse', emoji: '🌞', voice: 'coral', instructions: 'Voix joyeuse, souriante et pleine d’énergie, pour un enfant de 8 ans.' },
-  { id: 'conteur', label: 'Conteur grave', emoji: '🧙', voice: 'onyx', instructions: 'Voix grave de vieux conteur, posée, avec du mystère mais jamais effrayante.' },
-  { id: 'jeune', label: 'Jeune', emoji: '🧒', voice: 'nova', instructions: 'Voix jeune et dynamique, naturelle, comme un grand frère ou une grande sœur.' },
-  { id: 'mysterieuse', label: 'Mystérieuse', emoji: '🔮', voice: 'ballad', instructions: 'Voix mystérieuse et captivante, chuchotée par moments, sans faire peur.' },
-  { id: 'rigolote', label: 'Rigolote', emoji: '🤡', voice: 'ash', instructions: 'Voix rigolote et expressive, avec de l’humour dans le ton.' },
-];
+import { DEFAULT_PROFILES } from './voices.js';
 
 export const TONES: { id: string; label: string; emoji: string; instructions: string }[] = [
   { id: 'calme', label: 'Calme', emoji: '😌', instructions: 'Ton calme et apaisé, rythme tranquille.' },
@@ -96,6 +87,8 @@ export const DEFAULT_SETTINGS = {
     defaultSpeed: 1,
     defaultTone: 'calme',
     allowBrowserTts: false,
+    granularity: 'groupe' as 'phrase' | 'groupe' | 'chapitre',
+    profiles: DEFAULT_PROFILES,
   },
   stt: { browserFallback: true },
   languages: { enabled: ['fr', 'de', 'en'], level: 'A1', softTranslation: true },

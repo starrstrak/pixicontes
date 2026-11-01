@@ -4,6 +4,7 @@ import { Modal, VoiceField, useUI } from './ui';
 import { Icon } from './Icon';
 import { playOnce } from '../lib/player';
 import { getPrefs } from '../lib/prefs';
+import { effectiveSpec } from '../lib/voice';
 import type { Config } from '../lib/types';
 
 type Entry = { term: string; emoji: string; meaning: string; example: string; kind: string };
@@ -21,7 +22,7 @@ export function DictionaryModal({ term, context, lang, cfg, onClose }: { term: s
     finally { setLoading(false); }
   }
   useEffect(() => { if (term) void look(term); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, []);
-  const say = (t: string, l: string) => playOnce(t, { profile: p.voice || cfg.defaults.voice, dialogueProfile: null, tone: 'calme', lang: l, speed: Math.min(p.speed, 1), volume: p.volume, browserTts: false }).catch((er) => toast((er as KidError).kid));
+  const say = (t: string, l: string) => playOnce(t, { spec: { ...effectiveSpec(cfg, p), pace: -1, diction: 2 }, lang: l, speed: Math.min(p.speed, 1), volume: p.volume }).catch((er) => toast((er as KidError).kid));
   return (
     <Modal onClose={onClose} label="Dictionnaire">
       <div className="topbar"><h2>Dictionnaire</h2><button className="btn soft round" onClick={onClose} aria-label="Fermer"><Icon n="close" /></button></div>

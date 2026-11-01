@@ -4,6 +4,8 @@ import { adminToken, api, KidError } from '../lib/api';
 import { Modal } from '../components/ui';
 import { Icon } from '../components/Icon';
 import { Logo } from '../components/Logo';
+import { VoiceLab } from '../components/VoiceLab';
+import { BLANK_SPEC, type VoiceProfile, type VoiceLabData } from '../lib/voice';
 import { playOnce, unlockAudio } from '../lib/player';
 import type { Config } from '../lib/types';
 
@@ -104,19 +106,7 @@ export function Admin({ cfg, onClose, onConfig }: { cfg: Config; onClose: () => 
             {bool('stt.browserFallback', 'Micro : repli sur la reconnaissance vocale du navigateur')}
           </>)}
 
-          {tab === 'voice' && (<>
-            <div className="field"><label>Voix par défaut</label><select value={st.voice.defaultProfile} onChange={(e) => set('voice.defaultProfile', e.target.value)}>{data.voiceProfiles.map((v: any) => <option key={v.id} value={v.id}>{v.emoji} {v.label} ({v.voice})</option>)}</select></div>
-            <div className="field"><label>Style par défaut</label><select value={st.voice.defaultTone} onChange={(e) => set('voice.defaultTone', e.target.value)}>{data.tones.map((t: any) => <option key={t.id} value={t.id}>{t.emoji} {t.label}</option>)}</select></div>
-            {num('voice.defaultSpeed', 'Vitesse par défaut (0.7 à 1.3)', 0.05)}
-            {bool('voice.perCharacter', 'Voix différente pour les dialogues (coûte un peu plus de cache)')}
-            {st.voice.perCharacter && <div className="field"><label>Voix des dialogues</label><select value={st.voice.dialogueProfile} onChange={(e) => set('voice.dialogueProfile', e.target.value)}>{data.voiceProfiles.map((v: any) => <option key={v.id} value={v.id}>{v.emoji} {v.label}</option>)}</select></div>}
-            {bool('voice.allowBrowserTts', 'Autoriser la voix du navigateur en dernier recours (robotique)')}
-            <h2>Catalogue de voix</h2>
-            <table><tbody>{data.voiceProfiles.map((v: any) => (
-              <tr key={v.id}><td>{v.emoji} <b>{v.label}</b><br /><small className="muted">{v.voice} — {v.instructions}</small></td>
-                <td><button className="btn soft round" aria-label="Échantillon" onClick={async () => { unlockAudio(); try { await playOnce('Il était une fois un petit dragon qui aimait les histoires.', { profile: v.id, dialogueProfile: null, tone: st.voice.defaultTone, lang: 'fr', speed: 1, volume: 1, browserTts: false }); } catch (e) { flash((e as KidError).admin ?? (e as KidError).kid); } }}><Icon n="play" /></button></td></tr>
-            ))}</tbody></table>
-          </>)}
+          {tab === 'voice' && <VoiceAdmin st={st} set={set} lab={data.voiceLab} num={num} bool={bool} flash={flash} />}
 
           {tab === 'story' && (<>
             <h2>Chapitres</h2>
@@ -260,5 +250,59 @@ function Security({ flash }: { cfg: Config; flash: (m: string) => void }) {
       <button className="btn" disabled={n.length < 4} onClick={async () => { try { await api.post('/api/admin/change-pin', { oldPin: o, newPin: n }); flash('✅ Code changé'); setO(''); setN(''); } catch (e) { flash((e as KidError).admin ?? 'Erreur'); } }}>Changer</button>
       <p className="muted" style={{ marginTop: 10 }}>Après 5 essais ratés, l’accès est verrouillé 1 min, puis 5, 15 et 60 min.</p>
     </div>
+  );
+}
+
+function VoiceAdmin({ st, set, lab, num, bool, flash }: { st: S; set: (p: string, v: any) => void; lab: VoiceLabData; num: (p: string, l: string, s?: number, h?: string) => any; bool: (p: string, l: string) => any; flash: (m: string) => void }) {
+  const profiles: VoiceProfile[] = st.voice.profiles;
+  const [edit, setEdit] = useState<VoiceProfile | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [lang, setLang] = useState('fr');
+  const sample = async (spec: VoiceProfile['spec']) => {
+    unlockAudio(); setBusy(true);
+    const t = { fr: 'Il était une fois un petit dragon qui aimait les histoires. « Bonjour ! » dit-il.', de: 'Es war einmal ein kleiner Drache, der Geschichten liebte.', en: 'Once upon a time, a little dragon loved stories.' }[lang]!;
+    try { await playOnce(t, { spec, lang, speed: 1, volume: 1 }); } catch (e) { flash((e as KidError).admin ?? (e as KidError).kid); } finally { setBusy(false); }
+  };
+  const save = () => { if (!edit) return; const i = profiles.findIndex((p) => p.id === edit.id); set('voice.profiles', i < 0 ? [...profiles, edit] : profiles.map((p) => (p.id === edit.id ? edit : p))); setEdit(null); };
+  return (
+    <>
+      <div className="field"><label>Voix par défaut</label><select value={st.voice.defaultProfile} onChange={(e) => set('voice.defaultProfile', e.target.value)}>{profiles.map((v) => <option key={v.id} value={v.id}>{v.label}</option>)}</select></div>
+      {num('voice.defaultSpeed', 'Vitesse par défaut (0.7 à 1.3)', 0.05)}
+      <div className="field"><label>Fluidité par défaut (découpage de la lecture)</label>
+        <select value={st.voice.granularity} onChange={(e) => set('voice.granularity', e.target.value)}>
+          <option value="phrase">Phrase par phrase : démarrage rapide, surlignage précis, intonation moins liée</option>
+          <option value="groupe">Petits groupes de 1 à 3 phrases : bon compromis (recommandé)</option>
+          <option value="chapitre">Chapitre entier : intonation la plus naturelle, démarrage plus lent</option>
+        </select></div>
+      {bool('voice.perCharacter', 'Voix différente pour les dialogues')}
+      {st.voice.perCharacter && <div className="field"><label>Voix des dialogues</label><select value={st.voice.dialogueProfile} onChange={(e) => set('voice.dialogueProfile', e.target.value)}>{profiles.map((v) => <option key={v.id} value={v.id}>{v.label}</option>)}</select></div>}
+      {bool('voice.allowBrowserTts', 'Autoriser la voix du navigateur en dernier recours (robotique)')}
+      <p className="muted">Les voix « marin » et « cedar », ballad et verse nécessitent un modèle <b>gpt-4o-mini-tts</b> ou plus récent ; avec <b>tts-1</b>, elles sont remplacées par « coral ».</p>
+      <h2>Catalogue ({profiles.length} voix)</h2>
+      <div className="row" style={{ marginBottom: 10 }}>
+        <button className="btn mint" onClick={() => setEdit({ id: `v_${Date.now().toString(36)}`, label: 'Nouvelle voix', emoji: '🎙️', desc: '', spec: { ...BLANK_SPEC } })}><Icon n="plus" />Créer une voix</button>
+        <select value={lang} onChange={(e) => setLang(e.target.value)} style={{ width: 'auto' }} aria-label="Langue de l’échantillon"><option value="fr">Échantillon en français</option><option value="de">en allemand</option><option value="en">en anglais</option></select>
+      </div>
+      <table><tbody>{profiles.map((v) => (
+        <tr key={v.id}><td>{v.emoji} <b>{v.label}</b>{st.voice.defaultProfile === v.id && <span className="pill">défaut</span>}<br /><small className="muted">{v.spec.voice} · {v.desc}</small></td>
+          <td className="row" style={{ justifyContent: 'flex-end' }}>
+            <button className="btn soft round" aria-label={`Écouter ${v.label}`} disabled={busy} onClick={() => void sample(v.spec)}><Icon n="play" /></button>
+            <button className="btn soft round" aria-label={`Modifier ${v.label}`} onClick={() => setEdit(structuredClone(v))}><Icon n="edit" /></button>
+            <button className="btn soft round" aria-label={`Dupliquer ${v.label}`} onClick={() => set('voice.profiles', [...profiles, { ...structuredClone(v), id: `v_${Date.now().toString(36)}`, label: `${v.label} (copie)` }])}><Icon n="plus" /></button>
+            <button className="btn soft round" aria-label={`Supprimer ${v.label}`} disabled={profiles.length <= 1} onClick={() => set('voice.profiles', profiles.filter((p) => p.id !== v.id))}><Icon n="trash" /></button>
+          </td></tr>
+      ))}</tbody></table>
+      {edit && (
+        <Modal onClose={() => setEdit(null)} label="Modifier la voix">
+          <div className="topbar"><h2>Modifier la voix</h2><button className="btn soft round" onClick={() => setEdit(null)} aria-label="Fermer"><Icon n="close" /></button></div>
+          <div className="field"><label>Nom</label><input type="text" value={edit.label} onChange={(e) => setEdit({ ...edit, label: e.target.value })} /></div>
+          <div className="field"><label>Emoji</label><input type="text" maxLength={4} value={edit.emoji} onChange={(e) => setEdit({ ...edit, emoji: e.target.value })} /></div>
+          <div className="field"><label>Description courte</label><input type="text" maxLength={80} value={edit.desc} onChange={(e) => setEdit({ ...edit, desc: e.target.value })} /></div>
+          <VoiceLab spec={edit.spec} lab={lab} lang={lang} busy={busy} onChange={(spec) => setEdit({ ...edit, spec })} onSample={() => void sample(edit.spec)} />
+          <div className="row" style={{ marginTop: 14 }}><button className="btn soft" onClick={() => setEdit(null)}>Annuler</button><button className="btn mint" onClick={save}><Icon n="check" />Valider</button></div>
+          <p className="muted" style={{ marginTop: 8 }}>N’oubliez pas « Enregistrer » en haut après validation.</p>
+        </Modal>
+      )}
+    </>
   );
 }
