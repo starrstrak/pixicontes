@@ -3,6 +3,9 @@ import PDFDocument from 'pdfkit';
 import fs from 'node:fs';
 import path from 'node:path';
 import { IMAGE_DIR } from './config.js';
+import { fileURLToPath } from 'node:url';
+
+const LOGO = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'assets', 'logo-full.png');
 import type { Story } from './stories.js';
 
 export function storyToPdf(story: Story): PDFKit.PDFDocument {
@@ -16,7 +19,8 @@ export function storyToPdf(story: Story): PDFKit.PDFDocument {
   if (cover) doc.image(cover, 50 + (W - 360) / 2, 190, { fit: [360, 360] });
   const heroes = story.book.characters.filter((c) => c.isHero).map((c) => c.name).join(' et ');
   doc.fillColor('#6b5a99').font('Helvetica').fontSize(16).text(heroes ? `Une histoire avec ${heroes}` : '', 50, 600, { width: W, align: 'center' });
-  doc.fontSize(11).text('Créée avec PixiContes', 50, 760, { width: W, align: 'center' });
+  if (fs.existsSync(LOGO)) doc.image(LOGO, 50 + (W - 150) / 2, 650, { fit: [150, 150], align: 'center' });
+  doc.fillColor('#6b5a99').fontSize(10).text('Créée avec PixiContes', 50, 800, { width: W, align: 'center' });
 
   story.book.chapters.forEach((c, i) => {
     doc.addPage();

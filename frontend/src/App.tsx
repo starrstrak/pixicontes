@@ -6,6 +6,7 @@ import { unlockAudio } from './lib/player';
 import { sfx } from './lib/sound';
 import { Icon } from './components/Icon';
 import { Mascot } from './components/Mascot';
+import { Logo, Wordmark } from './components/Logo';
 import { useUI } from './components/ui';
 import { NewStory } from './screens/NewStory';
 import { Library } from './screens/Library';
@@ -60,7 +61,7 @@ export function App() {
     try { sfx('page'); setOpen(await api.get<Story>(`/api/stories/${id}`)); } catch (e) { toast((e as { kid?: string }).kid ?? 'Oups !'); }
   }
 
-  if (!cfg) return <div className="loader" style={{ position: 'static', height: '100%' }}><Mascot mood="think" size={140} /><h2>Pixi se réveille…</h2><p className="muted">Si ça dure, vérifie que le serveur est allumé.</p></div>;
+  if (!cfg) return <div className="loader" style={{ position: 'static', height: '100%' }}><Logo variant="full" height={190} /><div className="dots" aria-hidden="true"><i /><i /><i /></div><h2>Pixi se réveille…</h2><p className="muted">Si ça dure, vérifie que le serveur est allumé.</p></div>;
 
   const asleep = timeLeft === 0 && admin === 'off';
   return (
@@ -70,7 +71,7 @@ export function App() {
       </nav>
       <main className="main">
         <div className="topbar" style={{ marginBottom: 14 }}>
-          <div className="logo-btn" onPointerDown={logoDown} onPointerUp={logoUp} onPointerLeave={logoUp} onContextMenu={(e) => e.preventDefault()}><Mascot size={36} /> PixiContes</div>
+          <div className="logo-btn" onPointerDown={logoDown} onPointerUp={logoUp} onPointerLeave={logoUp} onContextMenu={(e) => e.preventDefault()}><Logo height={46} /> <Wordmark /></div>
           {!online && <span className="pill">📴 Hors-ligne : tu peux relire tes histoires</span>}
           {!cfg.hasKey && <span className="pill">💤 Pixi dort : demande à un grand</span>}
         </div>
@@ -82,7 +83,7 @@ export function App() {
       {open && <Reader key={open.id} initial={open} cfg={cfg} onClose={() => { setOpen(null); void loadLists(); }} onChanged={loadLists} />}
       {admin === 'pin' && <PinGate onClose={() => setAdmin('off')} onOk={() => setAdmin('on')} />}
       {admin === 'on' && <Admin cfg={cfg} onClose={() => { setAdmin('off'); void loadCfg(); }} onConfig={loadCfg} />}
-      {asleep && <div className="sleep"><Mascot mood="sleep" size={160} /><h1>Pixi dort…</h1><p>C’est fini pour aujourd’hui. À bientôt pour de nouvelles aventures ! 🌙</p></div>}
+      {asleep && <div className="sleep"><Logo variant="full" height={120} /><Mascot mood="sleep" size={120} /><h1>Pixi dort…</h1><p>C’est fini pour aujourd’hui. À bientôt pour de nouvelles aventures ! 🌙</p></div>}
     </div>
   );
 }

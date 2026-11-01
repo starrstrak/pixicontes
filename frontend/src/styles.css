@@ -236,3 +236,12 @@ table { width: 100%; border-collapse: collapse; } td, th { padding: 8px; text-al
 @keyframes flap { 50% { transform: rotate(-10deg); } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; } }
 @media (max-height: 860px) { .suggest { display: none; } }
+
+/* ----- Logo ----- */
+.brand-img { display: block; object-fit: contain; user-select: none; -webkit-user-drag: none; }
+:root[data-theme='night'] .brand-img { background: #f3f2fa; border-radius: 16px; padding: 4px 8px; }
+.wordmark { font-family: var(--font); font-weight: 800; font-size: 1.25rem; letter-spacing: -0.01em; }
+.wordmark span:first-child { color: #1f3a6e; } .wordmark span:last-child { color: #4a1f5e; }
+:root[data-theme='night'] .wordmark span:first-child { color: #9db8ff; } :root[data-theme='night'] .wordmark span:last-child { color: #d3a6f0; }
+.logo-btn { gap: 8px; }
+.loader .brand-img { margin-bottom: 4px; }

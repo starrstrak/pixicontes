@@ -7,7 +7,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['icon.svg'],
+      includeAssets: ['favicon.png', 'apple-touch-icon.png', 'brand/logo-full.png', 'brand/logo-mark.png'],
       manifest: {
         name: 'PixiContes', short_name: 'PixiContes', description: 'Crée tes propres histoires avec Pixi le dragon',
         lang: 'fr', start_url: '/', scope: '/', display: 'fullscreen', orientation: 'any',
@@ -15,7 +15,7 @@ export default defineConfig({
         icons: [
           { src: 'icon-192.png', sizes: '192x192', type: 'image/png' },
           { src: 'icon-512.png', sizes: '512x512', type: 'image/png' },
-          { src: 'icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+          { src: 'icon-maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
         ],
       },
       workbox: {

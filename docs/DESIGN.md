@@ -10,6 +10,7 @@
 | Typographie | Titres Merriweather (serif), texte Nunito ; options Atkinson Hyperlegible et OpenDyslexic ; taille réglable 90 %–150 % |
 | Formes | rayons 18–34 px, ombres très douces, blobs organiques en arrière-plan des bandeaux et des tuiles de genre |
 | Icônes | jeu d'icônes trait 2.2 px cohérent, un pictogramme dessiné par genre ; emojis limités aux choix visuels du héros et aux propositions de l'IA |
+| Logo | Livre ouvert d'où s'échappent étoiles et pixels, mot-symbole bleu nuit / violet. Fichiers : `frontend/public/brand/logo-full.png` et `logo-mark.png` (fond transparent), icônes PWA et favicon générés à partir de la marque. En-tête de l'app, écrans de chargement et de veille, espace parent, couverture du PDF. En mode nuit, posé sur une pastille claire |
 | Mascotte | Pixi : blob lavande à cornes, aplats, yeux blancs, joues rose poudré ; états repos, joie, réflexion, sommeil |
 | Navigation | barre flottante en pilule (portrait) / rail latéral (paysage), 4 espaces, état actif en pastille |
 | Lecteur | pochette d'illustration, chapitres numérotés, propositions en « pistes » façon playlist, barre sombre en bas avec précédent / lecture / suivant / vitesse et progression |

@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { adminToken, api, KidError } from '../lib/api';
 import { Modal } from '../components/ui';
 import { Icon } from '../components/Icon';
+import { Logo } from '../components/Logo';
 import { playOnce, unlockAudio } from '../lib/player';
 import type { Config } from '../lib/types';
 
@@ -23,7 +24,7 @@ export function PinGate({ onOk, onClose }: { onOk: () => void; onClose: () => vo
   const press = (d: string) => { const n = (pin + d).slice(0, 8); setPin(n); setMsg(''); };
   return (
     <Modal onClose={onClose} label="Espace parent">
-      <div className="topbar"><h2>Espace parent</h2><button className="btn soft round" onClick={onClose} aria-label="Fermer"><Icon n="close" /></button></div>
+      <div className="topbar"><div className="row"><Logo height={34} /><h2>Espace parent</h2></div><button className="btn soft round" onClick={onClose} aria-label="Fermer"><Icon n="close" /></button></div>
       {hasPin === false && <p className="muted" style={{ marginBottom: 8 }}>Première utilisation : choisissez un code (4 à 8 chiffres). Gardez-le pour vous !</p>}
       <div style={{ fontSize: '2rem', textAlign: 'center', letterSpacing: 8, minHeight: 50 }} aria-label="Code saisi">{'●'.repeat(pin.length) || '····'}</div>
       {msg && <p style={{ color: 'var(--danger)', textAlign: 'center', fontWeight: 800 }}>{msg}</p>}
@@ -76,7 +77,7 @@ export function Admin({ cfg, onClose, onConfig }: { cfg: Config; onClose: () => 
     <div className="reader admin" style={{ animation: 'none' }}>
       <div className="reader-top">
         <button className="btn soft round" onClick={() => { void api.post('/api/admin/logout').catch(() => {}); adminToken.set(''); onClose(); }} aria-label="Quitter"><Icon n="lock" /></button>
-        <h2>Espace parent</h2>
+        <Logo height={30} /><h2>Espace parent</h2>
         {dirty && <button className="btn mint" onClick={() => void save()}><Icon n="check" />Enregistrer</button>}
         {msg && <span className="pill">{msg}</span>}
       </div>

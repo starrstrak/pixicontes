@@ -1,4 +1,6 @@
-# 🐉 PixiContes
+<p align="center"><img src="frontend/public/brand/logo-full.png" alt="PixiContes" width="360"></p>
+
+# PixiContes
 
 Application familiale de création d'histoires pour un enfant de 8 ans. L'enfant choisit un genre, l'IA écrit le début, puis **l'enfant devient l'auteur** : il crée ses personnages, choisit ou invente la suite, change un détail, demande une surprise. Tout se fait au toucher, à la voix ou au clavier, en français (allemand et anglais en option, niveau A1), sur tablette Android ou navigateur.
 
